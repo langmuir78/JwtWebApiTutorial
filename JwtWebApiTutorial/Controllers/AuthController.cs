@@ -2,6 +2,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using JwtWebApiTutorial.Models;
+using JwtWebApiTutorial.Services.UserService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -12,12 +14,25 @@ namespace JwtWebApiTutorial.Controllers
   public class AuthController : ControllerBase
   {
     IConfiguration _configuration;
+    IUserService _userService;
 
     public static User user = new User();
 
-    public AuthController(IConfiguration configuration)
+    public AuthController(IConfiguration configuration, IUserService userService)
     {
       _configuration = configuration;
+      _userService = userService;
+    }
+
+    [HttpGet, Authorize]
+    public ActionResult<object> GetMe()
+    {
+      // var userName = User?.Identity?.Name;
+      // var userName2 = User?.FindFirstValue(ClaimTypes.Name);
+      // var role = User?.FindFirstValue(ClaimTypes.Role);
+
+      var userName = _userService.GetUsername();
+      return Ok(new { userName });
     }
 
     [HttpPost("register")]
